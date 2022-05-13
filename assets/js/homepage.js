@@ -30,11 +30,7 @@ var formSubmitHandler = function(event) {
 }
 
 var getUserRepos = function(user) {
-    //format the github api url
-
-    var apiUrl="https://api.github.com/users/" + user + "/repos";
-
-        //make a request to the url
+    //make a request to the url
 //Now that we've created the function, let's set it up so that when the response data is converted to JSON, 
 //it will be sent from getUserRepos() to displayRepos(). Edit the fetch() callback code in the getUserRepos() function
     fetch(apiUrl).then(function(response) {
@@ -101,5 +97,3 @@ var displayRepos = function(repos, searchTerm) {
 //Then we create a <span> to hold the formatted repository name. 
 //We add that to the <div> and add the entire <div> to the container we created earlier.
 }
-
-userFormEl.addEventListener("submit", formSubmitHandler)

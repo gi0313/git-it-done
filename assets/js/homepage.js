@@ -3,7 +3,7 @@ var userFormEl=document.querySelector("#user-form");
 var nameInputEl=document.querySelector("#username");
 //needed before we could display the github api responses
 var repoContainerEl = document.querySelector("#repos-container");
-var repoSearchTerm = document.querySelector("#repo-search-term")
+var repoSearchTerm = document.querySelector("#repo-search-term");
 
 //When we submit the form, 
 //we get the value from the <input> element via the nameInputEl DOM variable and 
@@ -22,6 +22,7 @@ var formSubmitHandler = function(event) {
 
     if(username) {
         getUserRepos(username);
+        repoContainerEl.textContent = "";
         nameInputEl.value ="";
     } else {
         alert("please enter a Github username");
@@ -31,6 +32,7 @@ var formSubmitHandler = function(event) {
 
 var getUserRepos = function(user) {
     //make a request to the url
+    var apiUrl = "https://api.github.com/users/" + user + "/repos";
 //Now that we've created the function, let's set it up so that when the response data is converted to JSON, 
 //it will be sent from getUserRepos() to displayRepos(). Edit the fetch() callback code in the getUserRepos() function
     fetch(apiUrl).then(function(response) {
@@ -63,13 +65,15 @@ var displayRepos = function(repos, searchTerm) {
     //clear old content
     repoContainerEl.textContent ="";
     repoSearchTerm.textContent = searchTerm;
-
+    //loop over repos
     for (let i = 0; i < repos.length; i++) {
         //format repo name
         var repoName = repos[i].owner.login + "/" + repos[i].name;
+        //create link for each repo
         //create a container for each repo
-        var repoEl = document.createElement("div");
+        var repoEl = document.createElement("a"); //changed from"div"
         repoEl.classList = "list-item flex-row justify-space-between align-center";
+        repoEl.setAttribute("href", "./single-repo.html?repo = " + repoName); //created link to single repo html
         //create a span element to hold repository name
         var titleEl = document.createElement("span");
         titleEl.textContent = repoName;
@@ -97,3 +101,5 @@ var displayRepos = function(repos, searchTerm) {
 //Then we create a <span> to hold the formatted repository name. 
 //We add that to the <div> and add the entire <div> to the container we created earlier.
 }
+//event listiner to forms
+userFormEl.addEventListener("submit", formSubmitHandler);

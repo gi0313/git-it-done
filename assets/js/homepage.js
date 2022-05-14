@@ -1,3 +1,4 @@
+var languageButtonsEl = document.querySelector("#language-buttons");
 //variables that refrence the dom elements in the html document
 var userFormEl=document.querySelector("#user-form");
 var nameInputEl=document.querySelector("#username");
@@ -15,6 +16,20 @@ var repoSearchTerm = document.querySelector("#repo-search-term");
 //if we accidentally left the <input> field blank! 
 //If there is in fact a value to username, we pass that data to getUserRepos() 
 //as an argument. Then, to clear the form, we clear out the <input> element's value.
+
+var getFeaturedRepos = function(language) {
+    var apiUrl = "https://api.github.com/search/repositories?q=" + language + "+is:featured&sort=help-wanted-issues";
+    
+    fetch(apiUrl).then(function(response) {
+        if (response.ok) {
+            response.json().then(function(data) {
+                displayRepos(data.items, language);
+            })
+        } else {
+            alert('Error: Github User not found');
+        }
+    })
+}
 var formSubmitHandler = function(event) {
     event.preventDefault();
     //get value from input element
@@ -44,10 +59,10 @@ var getUserRepos = function(user) {
         } else {
             alert("Error: GitHUb User Not Found");
         }
-})
+    })
     .catch(function(error) {
         //notice this '.catch()' getting chained to the end of the '.then()' method 
-        alert("unable to connect to GitHub")
+        alert("unable to connect to GitHub");
 //When we use fetch() to create a request, the request might go one of two ways: the request may find its destination URL and attempt to get the data in question, 
 //which would get returned into the .then() method; or if the request fails, that error will be sent to the .catch() method.
     })
@@ -57,13 +72,9 @@ var getUserRepos = function(user) {
 var displayRepos = function(repos, searchTerm) {
     //check if api returned any repos
     if (repos.length === 0) {
-        repoContainerEl.textContent = "No repositories found."
+        repoContainerEl.textContent = "No repositories found.";
         return;
     }
-    console.log(repos);
-    console.log(searchTerm);
-    //clear old content
-    repoContainerEl.textContent ="";
     repoSearchTerm.textContent = searchTerm;
     //loop over repos
     for (let i = 0; i < repos.length; i++) {
@@ -73,7 +84,7 @@ var displayRepos = function(repos, searchTerm) {
         //create a container for each repo
         var repoEl = document.createElement("a"); //changed from"div"
         repoEl.classList = "list-item flex-row justify-space-between align-center";
-        repoEl.setAttribute("href", "./single-repo.html?repo = " + repoName); //created link to single repo html
+        repoEl.setAttribute("href", "./single-repo.html?repo=" + repoName); //created link to single repo html
         //create a span element to hold repository name
         var titleEl = document.createElement("span");
         titleEl.textContent = repoName;
@@ -101,5 +112,15 @@ var displayRepos = function(repos, searchTerm) {
 //Then we create a <span> to hold the formatted repository name. 
 //We add that to the <div> and add the entire <div> to the container we created earlier.
 }
+var buttonClickHandler = function(event) {
+    var language = event.target.getAttribute("data-language");
+//Now let's call the getFeaturedRepos() function and pass the value we just retrieved from data-language as the argument
+    if (language) {
+        getFeaturedRepos(language);
+        //clear old content
+        repoContainerEl.textContent="";
+    }
+}
 //event listiner to forms
 userFormEl.addEventListener("submit", formSubmitHandler);
+languageButtonsEl.addEventListener("click", buttonClickHandler);
